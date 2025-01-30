@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solid Color PNG Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Generate a Solid Color PNG</h2>
+
+    <label for="color">Select Color:</label>
+    <input type="color" id="color" value="#ff0000">
+    
+    <label for="alpha">Alpha (0-1):</label>
+    <input type="range" id="alpha" min="0" max="1" step="0.01" value="1" oninput="updateAlphaLabel()">
+    <span id="alphaValue">1.00</span>
+    
+    <br><br>
+
+    <label for="width">Width:</label>
+    <input type="number" id="width" value="200" min="1">
+    
+    <label for="height">Height:</label>
+    <input type="number" id="height" value="200" min="1">
+    
+    <button onclick="generateSolidColorPNG()">Generate PNG</button>
+    <br>
+    
+    <canvas id="canvas"></canvas>
+    <br>
+    <a id="download" style="display: none;">Download PNG</a>
+
+    <script>
+        function updateAlphaLabel() {
+            document.getElementById("alphaValue").textContent = parseFloat(document.getElementById("alpha").value).toFixed(2);
+        }
+
+        function hexToRgb(hex) {
+            hex = hex.replace(/^#/, '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(x => x + x).join('');
+            }
+            const bigint = parseInt(hex, 16);
+            return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+        }
+
+        function generateSolidColorPNG() {
+            const color = document.getElementById("color").value;
+            const alpha = parseFloat(document.getElementById("alpha").value);
+            const width = parseInt(document.getElementById("width").value, 10);
+            const height = parseInt(document.getElementById("height").value, 10);
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const [r, g, b] = hexToRgb(color);
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            ctx.fillRect(0, 0, width, height);
+
+            const dataURL = canvas.toDataURL("image/png");
+
+            const downloadLink = document.getElementById("download");
+            downloadLink.href = dataURL;
+            downloadLink.download = "solid_color.png";
+            downloadLink.textContent = "Download PNG";
+            downloadLink.style.display = "block";
+        }
+    </script>
+
+</body>
+</html>
