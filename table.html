@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>table</title>
+	<style>
+		table {
+			border-collapse: collapse;
+			margin: 20px 0;
+		}
+
+		th,
+		td {
+			border: 1px solid #000;
+			padding: 8px;
+			text-align: center;
+			font-family: monospace;
+		}
+
+		h2 {
+			color: #333;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="tables-container"></div>
+
+	<script>
+		const hexChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+
+		const operations = {
+			add: (row, col) => (row + col).toString(16).padStart(2, '0').toUpperCase(),
+			sub: (row, col) => row >= col ? (row - col).toString(16).padStart(2, '0').toUpperCase() : '--',
+			mul: (row, col) => (row * col).toString(16).padStart(2, '0').toUpperCase(),
+			div: (row, col) => col === 0 ? 'NaN' : Math.floor(row / col).toString(16).toUpperCase(),
+			mod: (row, col) => col === 0 ? 'NaN' : (row % col).toString(16).toUpperCase()
+		};
+
+		function createTable(operator, operation) {
+			const table = document.createElement('table');
+
+			const headerRow = document.createElement('tr');
+			headerRow.innerHTML = `<th>${operator}</th>` +
+				hexChars.map(c => `<th>${c}</th>`).join('');
+			table.appendChild(headerRow);
+
+			hexChars.forEach((h, row) => {
+				const tr = document.createElement('tr');
+				tr.innerHTML = `<th>${h}</th>` +
+					hexChars.map((_, col) => {
+						const val = operations[operation](parseInt(h, 16), col);
+						return `<td>${val}</td>`;
+					}).join('');
+				table.appendChild(tr);
+			});
+
+			return table;
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			const container = document.getElementById('tables-container');
+
+			const tables = [
+				['+', 'add table', 'add'],
+				['-', 'sub table', 'sub'],
+				['×', 'mul table', 'mul'],
+				['÷', 'div table', 'div'],
+				['%', 'mod table', 'mod']
+			];
+
+			tables.forEach(([op, title, func]) => {
+				const heading = document.createElement('h2');
+				heading.textContent = title;
+				container.appendChild(heading);
+				container.appendChild(createTable(op, func));
+			});
+		});
+	</script>
+</body>
+
+</html>
